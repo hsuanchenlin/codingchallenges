@@ -65,3 +65,4 @@ test-output/
 # Rust specific
 /target/
 **/*.rs.bk
+**/target
