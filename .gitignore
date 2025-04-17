@@ -61,3 +61,7 @@ obj/
 # Test outputs
 *.log
 test-output/
+
+# Rust specific
+/target/
+**/*.rs.bk
