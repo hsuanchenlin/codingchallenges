@@ -1,0 +1,6 @@
+This is a test file for Huffman coding.
+It contains some repeated characters and patterns to demonstrate compression.
+The Huffman coding algorithm works by assigning variable-length codes to characters
+based on their frequency in the input text.
+More frequent characters get shorter codes, which leads to effective compression.
+aaaaaaaaaabbbbbbbbcccccddddeeeeffffffgggggghhhhhhhhiiiiiiiiijjjjjjjkkkkkkklllllmmmmmnnnnn
