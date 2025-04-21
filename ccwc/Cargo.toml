@@ -6,6 +6,8 @@ authors = ["Your Name <your.email@example.com>"]
 description = "A JSON parser implementation following the JSON specification"
 
 [dependencies]
+clap = { version = "4.5.37", features = ["derive"] }
+tempfile = "3.19.1"
 # No external dependencies needed
 
 [profile.release]
