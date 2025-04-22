@@ -1,6 +1,7 @@
 mod command_args;
 #[cfg(test)]
 mod test;
+mod std_in;
 // This will load tests.rs
 
 use std::fs;
@@ -8,6 +9,11 @@ use std::io::{self, Read};
 use std::path::Path;
 use clap::{Parser, ArgAction};
 use crate::command_args::Args;
+
+// Include this at the top of your file
+mod io_operations;
+use io_operations::{StdinOperations, StdinReader};
+
 
 // Modify your functions to return a string instead of printing directly
 fn process_file(args: &Args, filename: &str, default_mode: bool) -> String {
@@ -39,8 +45,6 @@ fn process_file(args: &Args, filename: &str, default_mode: bool) -> String {
                 output.push_str(&format!("{:8}", chars));
             }
             
-            // ... rest of your function ...
-            
             output.push_str(&format!(" {}", filename));
             output
         },
@@ -50,15 +54,12 @@ fn process_file(args: &Args, filename: &str, default_mode: bool) -> String {
     }
 }
 
-fn process_stdin(args: &Args, default_mode: bool) {
-    let stdin = io::stdin();
+// Replace the original process_stdin function with this version
+fn process_stdin<T: StdinOperations>(args: &Args, default_mode: bool, mut stdin_reader: T) -> String {
     let mut bytes = Vec::new();
     
     // Read all stdin as bytes
-    {
-        let mut handle = stdin.lock();
-        handle.read_to_end(&mut bytes).unwrap();
-    }
+    stdin_reader.read_to_end(&mut bytes).unwrap();
     
     let content = String::from_utf8_lossy(&bytes);
     
@@ -84,7 +85,7 @@ fn process_stdin(args: &Args, default_mode: bool) {
         output.push_str(&format!("{:8}", chars));
     }
     
-    println!("{}", output);
+    output
 }
 
 // In your main function:
@@ -102,6 +103,10 @@ fn main() {
             println!("{}", output);
             // ...
         },
-        None => process_stdin(&args, default_mode),
+        None => {
+            // Then in your main function or wherever you call process_stdin, use:
+            let output = process_stdin(&args, default_mode, StdinReader);
+            println!("{}", output);
+        },
     }
 }
