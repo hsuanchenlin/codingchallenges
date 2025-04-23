@@ -1,7 +1,6 @@
 mod command_args;
 #[cfg(test)]
 mod test;
-mod std_in;
 // This will load tests.rs
 
 use crate::command_args::Args;
