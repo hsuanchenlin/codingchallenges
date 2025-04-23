@@ -4,11 +4,10 @@ mod test;
 mod std_in;
 // This will load tests.rs
 
-use std::fs;
-use std::io::{self, Read};
-use std::path::Path;
-use clap::{Parser, ArgAction};
 use crate::command_args::Args;
+use clap::{ArgAction, Parser};
+use std::fs;
+use std::path::Path;
 
 // Include this at the top of your file
 mod io_operations;

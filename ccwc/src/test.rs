@@ -5,8 +5,7 @@ mod tests {
     use crate::command_args::Args;
     use crate::io_operations::StdinOperations;
     use crate::{process_file, process_stdin};
-    use mockall::predicate::*;
-    use mockall::*;
+    use mockall::mock;
 
     // Create mock for StdinOperations
     mock! {
