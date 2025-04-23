@@ -1,46 +1,20 @@
+mod command_args;
+#[cfg(test)]
+mod test;
+// This will load tests.rs
+
+use crate::command_args::Args;
+use clap::{ArgAction, Parser};
 use std::fs;
-use std::io::{self, Read};
 use std::path::Path;
-use clap::{Parser, ArgAction};
 
-/// A simple implementation of the wc command
-#[derive(Parser, Debug)]
-#[command(author, version, about, long_about = None)]
-struct Args {
-    /// Count bytes
-    #[arg(short = 'c', long = "bytes", action = ArgAction::SetTrue)]
-    bytes: bool,
+// Include this at the top of your file
+mod io_operations;
+use io_operations::{StdinOperations, StdinReader};
 
-    /// Count lines
-    #[arg(short = 'l', long = "lines", action = ArgAction::SetTrue)]
-    lines: bool,
 
-    /// Count words
-    #[arg(short = 'w', long = "words", action = ArgAction::SetTrue)]
-    words: bool,
-
-    /// Count characters
-    #[arg(short = 'm', long = "chars", action = ArgAction::SetTrue)]
-    chars: bool,
-
-    /// File to process, if omitted reads from stdin
-    file: Option<String>,
-}
-
-fn main() {
-    let args = Args::parse();
-    
-    // If no counting options are specified, default to lines, words, and bytes
-    let default_mode = !args.bytes && !args.lines && !args.words && !args.chars;
-    
-    // Process file or stdin based on arguments
-    match &args.file {
-        Some(file) => process_file(&args, file, default_mode),
-        None => process_stdin(&args, default_mode),
-    }
-}
-
-fn process_file(args: &Args, filename: &str, default_mode: bool) {
+// Modify your functions to return a string instead of printing directly
+fn process_file(args: &Args, filename: &str, default_mode: bool) -> String {
     let path = Path::new(filename);
     
     match fs::read(path) {
@@ -70,23 +44,20 @@ fn process_file(args: &Args, filename: &str, default_mode: bool) {
             }
             
             output.push_str(&format!(" {}", filename));
-            println!("{}", output);
+            output
         },
         Err(_) => {
-            eprintln!("Could not read file: {}", filename);
+            format!("Could not read file: {}", filename)
         }
     }
 }
 
-fn process_stdin(args: &Args, default_mode: bool) {
-    let stdin = io::stdin();
+// Replace the original process_stdin function with this version
+fn process_stdin<T: StdinOperations>(args: &Args, default_mode: bool, mut stdin_reader: T) -> String {
     let mut bytes = Vec::new();
     
     // Read all stdin as bytes
-    {
-        let mut handle = stdin.lock();
-        handle.read_to_end(&mut bytes).unwrap();
-    }
+    stdin_reader.read_to_end(&mut bytes).unwrap();
     
     let content = String::from_utf8_lossy(&bytes);
     
@@ -112,5 +83,28 @@ fn process_stdin(args: &Args, default_mode: bool) {
         output.push_str(&format!("{:8}", chars));
     }
     
-    println!("{}", output);
+    output
+}
+
+// In your main function:
+fn main() {
+    let args = Args::parse();
+    
+    // If no counting options are specified, default to lines, words, and bytes
+    let default_mode = !args.bytes && !args.lines && !args.words && !args.chars;
+    
+    // Process file or stdin based on arguments
+    match &args.file {
+        Some(file) => {
+            // ...
+            let output = process_file(&args, file, default_mode);
+            println!("{}", output);
+            // ...
+        },
+        None => {
+            // Then in your main function or wherever you call process_stdin, use:
+            let output = process_stdin(&args, default_mode, StdinReader);
+            println!("{}", output);
+        },
+    }
 }
