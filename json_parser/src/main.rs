@@ -113,6 +113,6 @@ fn validate_json(content: &str) -> Result<(), String> {
                 _ => Err("JSON must be either an object or an array".to_string()),
             }
         },
-        Err(err) => Err(err.to_string()),
+        Err(err) => Err(format!("{:?}", err)),
     }
 }
