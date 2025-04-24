@@ -17,6 +17,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Run tests
+    - name: Run tests on ccwc
       run: cargo test --manifest-path ccwc/Cargo.toml
-
+    - name: Run tests on json_parser
+      run: cargo test --manifest-path json_parser/Cargo.toml
