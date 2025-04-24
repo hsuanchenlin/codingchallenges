@@ -8,8 +8,6 @@ mod json_value;
 mod lexer;
 mod parser;
 
-
-
 use json_value::JsonValue;
 
 /// A JSON parser that validates JSON files
@@ -115,6 +113,6 @@ fn validate_json(content: &str) -> Result<(), String> {
                 _ => Err("JSON must be either an object or an array".to_string()),
             }
         },
-        Err(err) => Err(format!("{:?}", err)),
+        Err(err) => Err(err.to_string()),
     }
 }
